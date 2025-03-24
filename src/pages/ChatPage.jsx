@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import { io } from "socket.io-client";
+import back from "../assets/back-arrow.svg";
+import avatar from "../assets/avatar.png";
 
 const socket = io("http://localhost:5000");
 
@@ -116,98 +118,124 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="flex h-screen">
+      <div className="flex h-screen font-sans">
         {/* Left Panel - Chat List */}
         <div className="w-1/3  p-4 overflow-auto">
-          <h2 className="text-lg font-bold mb-4">Chats</h2>
+          <h2 className="text-lg font-mono font-semibold mb-4">Chats</h2>
           {chats.length === 0 ? (
             <p>No chats available. Start a new chat!</p>
           ) : (
-            chats.map((chat) => (
-              <div
-                key={chat._id}
-                className="p-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
-                onClick={() => setSelectedChat(chat)}
-              >
-                <img
-                  src={
-                    chat.users.find((u) => u._id !== user?._id)?.profilePic ||
-                    "default-profile.png"
-                  }
-                  alt={chat.users.find((u) => u._id !== user?._id)?.name}
-                  className="w-10 h-10 rounded-full mr-2"
-                />
-                <span className="font-medium">
-                  {chat.users.find((u) => u._id !== user?._id)?.name}
-                </span>
-              </div>
-            ))
+            chats.map((chat) => {
+              const uu = chat.users.find((u) => u._id !== user?._id);
+              return (
+                <div
+                  key={chat._id}
+                  className="p-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
+                  onClick={() => setSelectedChat(chat)}
+                >
+                  <img
+                    src={
+                      uu?.profilePic
+                        ? `http://localhost:5000${uu.profilePic}`
+                        : avatar
+                    }
+                    alt={uu?.name}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <span className="font-medium">{uu?.name}</span>
+                </div>
+              );
+            })
           )}
         </div>
 
         {/* Right Panel - Chat or New Chat */}
-        <div className="w-2/3  bg-gray-200">
+        <div className="w-2/3 bg-gray-200">
           {selectedChat && !showUsersList ? (
             <div className="h-full flex flex-col justify-between">
-              <div className="bg-white p-4 flex items-center">
-                <img
-                  src={
-                    selectedChat.users.find((u) => u._id !== user?._id)
-                      ?.profilePic || "default-profile.png"
-                  }
-                  alt={
-                    selectedChat.users.find((u) => u._id !== user?._id)?.name
-                  }
-                  className="w-10 h-10 rounded-full mr-2"
-                />
-                <h2 className="font-semibold">
-                  {selectedChat.users.find((u) => u._id !== user?._id)?.name}
-                </h2>
-              </div>
-              <div className="h-80 overflow-auto border p-4 mb-4">
-                {messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={
-                      msg.sender._id === user._id
-                        ? "text-right mb-2"
-                        : "text-left mb-2"
-                    }
-                  >
-                    <p
-                      className={`p-2 inline-block rounded-lg ${
-                        msg.sender._id === user._id
-                          ? "bg-green-200"
-                          : "bg-white"
-                      }`}
+              {(() => {
+                const otherUser = selectedChat.users.find(
+                  (u) => u._id !== user?._id
+                );
+
+                return (
+                  <>
+                    <div className="bg-white p-4 flex items-center">
+                      <button
+                        className="pr-4"
+                        onClick={() => {
+                          setSelectedChat(null);
+                        }}
+                      >
+                        <img
+                          src={back}
+                          alt="back Icon"
+                          width="20"
+                          height="20"
+                        />
+                      </button>
+                      <img
+                        src={
+                          otherUser?.profilePic
+                            ? `http://localhost:5000${otherUser.profilePic}`
+                            : avatar
+                        }
+                        alt={otherUser?.name}
+                        className="w-10 h-10 rounded-full mr-2"
+                      />
+                      <h2 className="font-semibold">{otherUser?.name}</h2>
+                    </div>
+
+                    <div className="flex-1 overflow-auto border p-4 mb-4">
+                      {messages.map((msg, index) => (
+                        <div
+                          key={index}
+                          className={
+                            msg.sender._id === user._id
+                              ? "text-right mb-2"
+                              : "text-left mb-2"
+                          }
+                        >
+                          <p
+                            className={`p-2 inline-block rounded-lg ${
+                              msg.sender._id === user._id
+                                ? "bg-green-200"
+                                : "bg-white"
+                            }`}
+                          >
+                            {msg.content}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div
+                      className="flex p-4"
+                      style={{ width: "-webkit-fill-available" }}
                     >
-                      {msg.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="flex p-4 "
-                style={{ width: "-webkit-fill-available" }}
-              >
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  className="border p-2 w-full"
-                />
-                <button
-                  onClick={handleSendMessage}
-                  className="mt-2 p-2 bg-blue-500 text-white"
-                >
-                  Send
-                </button>
-              </div>
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        className="border p-2 w-full"
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        className="mt-2 p-2 bg-blue-500 text-white"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           ) : (
-            <div>
-              <h2 className="text-lg font-bold mb-4">Start a New Chat</h2>
+            <div className="p-4">
+              <h2 className="text-lg font-mono font-semibold mb-4">
+                Start a New Chat
+              </h2>
               <input
                 type="text"
                 placeholder="Search users..."
@@ -219,23 +247,22 @@ const ChatPage = () => {
                 <button
                   key={u._id}
                   onClick={() => handleNewChat(u._id)}
-                  className="block w-full p-2 bg-blue-500 text-white mb-2 rounded"
+                  className="flex w-full p-2 bg-white mb-2 rounded"
                 >
-                  Chat with {u.name}
+                  <img
+                    src={
+                      u.profilePic
+                        ? `http://localhost:5000${u.profilePic}`
+                        : avatar
+                    }
+                    alt={u.name}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <span>{u.name}</span>
                 </button>
               ))}
             </div>
           )}
-          {/* {selectedChat && (
-            <button
-              className="bg-blue-500 text-white"
-              onClick={() => {
-                setShowUsersList(true);
-              }}
-            >
-              +
-            </button>
-          )} */}
         </div>
       </div>
     </>

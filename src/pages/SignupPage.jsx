@@ -36,11 +36,11 @@ const SignupPage = () => {
     }
 
     try {
-      console.log(formDataToSend);
-      const response = await API.post("/users/register", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
+      console.log(formData);
+      const response = await API.post("/users/register", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       localStorage.setItem("token", response.data.token);
       navigate("/chats");
