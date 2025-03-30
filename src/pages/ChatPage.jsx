@@ -4,11 +4,12 @@ import { io } from "socket.io-client";
 import back from "../assets/back-arrow.svg";
 import avatar from "../assets/avatar.png";
 import newMessage from "../assets/new-message.svg";
+import SideBar from "../components/SideBar";
 
 const socket = io("http://localhost:5000");
 
 const ChatPage = () => {
-  const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -44,7 +45,7 @@ const ChatPage = () => {
   const fetchLoggedInUser = async () => {
     try {
       const { data } = await API.get("/users/profile");
-      setUser(data);
+      setUserProfile(data);
     } catch (error) {
       console.error("Error fetching user:", error);
     }
@@ -85,7 +86,7 @@ const ChatPage = () => {
     try {
       const response = await API.post("/messages", {
         content: message,
-        sender: user._id,
+        sender: userProfile._id,
         chatId: selectedChat._id,
       });
 
@@ -117,8 +118,9 @@ const ChatPage = () => {
   );
 
   return (
-    <>
-      <div className="flex h-screen font-sans">
+    <div className="flex">
+      <SideBar profile={userProfile} />
+      <div className="flex h-screen font-sans w-full">
         {/* Left Panel - Chat List */}
         <div className="w-1/3  p-4 overflow-auto border-x">
           {showUsersList && (
@@ -175,11 +177,11 @@ const ChatPage = () => {
                 <p>No chats available. Start a new chat!</p>
               ) : (
                 chats.map((chat) => {
-                  const uu = chat.users.find((u) => u._id !== user?._id);
+                  const uu = chat.users.find((u) => u._id !== userProfile?._id);
                   return (
                     <div
                       key={chat._id}
-                      className="p-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
+                      className="p-2 border-b-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
                       onClick={() => setSelectedChat(chat)}
                     >
                       <img
@@ -208,7 +210,7 @@ const ChatPage = () => {
             <div className="h-full flex flex-col justify-between">
               {(() => {
                 const otherUser = selectedChat.users.find(
-                  (u) => u._id !== user?._id
+                  (u) => u._id !== userProfile?._id
                 );
 
                 return (
@@ -244,14 +246,14 @@ const ChatPage = () => {
                         <div
                           key={index}
                           className={
-                            msg.sender._id === user._id
+                            msg.sender._id === userProfile._id
                               ? "text-right mb-2"
                               : "text-left mb-2"
                           }
                         >
                           <p
                             className={`p-2 inline-block rounded-lg ${
-                              msg.sender._id === user._id
+                              msg.sender._id === userProfile._id
                                 ? "bg-green-200"
                                 : "bg-white"
                             }`}
@@ -301,7 +303,7 @@ const ChatPage = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
