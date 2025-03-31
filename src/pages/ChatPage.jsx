@@ -5,23 +5,25 @@ import back from "../assets/back-arrow.svg";
 import avatar from "../assets/avatar.png";
 import newMessage from "../assets/new-message.svg";
 import SideBar from "../components/SideBar";
+import UserList from "../components/UserList";
+import { useDispatch, useSelector } from "react-redux";
+import Profile from "../components/Profile";
+import { performAction } from "../reducers/userActionSlice";
 
 const socket = io("http://localhost:5000");
 
 const ChatPage = () => {
+  const dispatch = useDispatch();
+  const userAction = useSelector((state) => state.userAction.leftPanel);
   const [userProfile, setUserProfile] = useState(null);
-  const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [showUsersList, setShowUsersList] = useState(false);
 
   useEffect(() => {
     fetchLoggedInUser();
     fetchChats();
-    fetchUsers();
     socket.on("message", (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
@@ -57,15 +59,6 @@ const ChatPage = () => {
       setChats(data);
     } catch (error) {
       console.error("Error fetching chats:", error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const { data } = await API.get("/users");
-      setUsers(data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
     }
   };
 
@@ -113,95 +106,68 @@ const ChatPage = () => {
     };
   }, [selectedChat]);
 
-  const filteredUsers = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const ChatList = () => {
+    return (
+      <div>
+        <div className="flex justify-between">
+          <h2 className="text-lg font-mono font-semibold mb-4">Chats</h2>
+          <button onClick={() => dispatch(performAction("USERS_LIST"))}>
+            <img
+              src={newMessage}
+              alt="new message Icon"
+              width="20"
+              height="20"
+            />
+          </button>
+        </div>
+        {chats.length === 0 ? (
+          <p>No chats available. Start a new chat!</p>
+        ) : (
+          chats.map((chat) => {
+            const uu = chat.users.find((u) => u._id !== userProfile?._id);
+            return (
+              <div
+                key={chat._id}
+                className="p-2 border-b-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
+                onClick={() => setSelectedChat(chat)}
+              >
+                <img
+                  src={
+                    uu?.profilePic
+                      ? `http://localhost:5000${uu.profilePic}`
+                      : avatar
+                  }
+                  alt={uu?.name}
+                  className="w-10 h-10 rounded-full mr-2"
+                />
+                <div>
+                  <span className="font-medium">{uu?.name}</span>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
+  };
+  const renderLeftPanel = () => {
+    switch (userAction) {
+      case "PROFILE":
+        return <Profile />;
+      case "USERS_LIST":
+        return <UserList handleNewChat={handleNewChat} />;
 
+      default:
+        return <ChatList />;
+    }
+  };
   return (
     <div className="flex">
-      <SideBar profile={userProfile} />
+      {userProfile && <SideBar profile={userProfile} />}
       <div className="flex h-screen font-sans w-full">
         {/* Left Panel - Chat List */}
         <div className="w-1/3  p-4 overflow-auto border-x">
-          {showUsersList && (
-            <div>
-              <div className="flex items-center mb-4">
-                <button onClick={() => setShowUsersList(false)}>
-                  <img src={back} alt="back Icon" width="20" height="20" />
-                </button>
-                <h2 className="text-lg font-mono font-semibold px-4">
-                  Start a New Chat
-                </h2>
-              </div>
-              <input
-                type="text"
-                placeholder="Search name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-md bg-gray-200"
-              />
-              {filteredUsers.map((u) => (
-                <button
-                  key={u._id}
-                  onClick={() => handleNewChat(u._id)}
-                  className="flex w-full p-2 bg-white mb-2 rounded"
-                >
-                  <img
-                    src={
-                      u.profilePic
-                        ? `http://localhost:5000${u.profilePic}`
-                        : avatar
-                    }
-                    alt={u.name}
-                    className="w-10 h-10 rounded-full mr-2"
-                  />
-                  <span>{u.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {!showUsersList && (
-            <div>
-              <div className="flex justify-between">
-                <h2 className="text-lg font-mono font-semibold mb-4">Chats</h2>
-                <button onClick={() => setShowUsersList(true)}>
-                  <img
-                    src={newMessage}
-                    alt="new message Icon"
-                    width="20"
-                    height="20"
-                  />
-                </button>
-              </div>
-              {chats.length === 0 ? (
-                <p>No chats available. Start a new chat!</p>
-              ) : (
-                chats.map((chat) => {
-                  const uu = chat.users.find((u) => u._id !== userProfile?._id);
-                  return (
-                    <div
-                      key={chat._id}
-                      className="p-2 border-b-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
-                      onClick={() => setSelectedChat(chat)}
-                    >
-                      <img
-                        src={
-                          uu?.profilePic
-                            ? `http://localhost:5000${uu.profilePic}`
-                            : avatar
-                        }
-                        alt={uu?.name}
-                        className="w-10 h-10 rounded-full mr-2"
-                      />
-                      <div>
-                        <span className="font-medium">{uu?.name}</span>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          )}
+          {renderLeftPanel()}
         </div>
 
         {/* Right Panel - Chat or New Chat */}
