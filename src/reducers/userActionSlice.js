@@ -9,7 +9,6 @@ const userActionSlice = createSlice({
   initialState,
   reducers: {
     performAction: (state, action) => {
-      console.log(action.payload);
       state.leftPanel = action.payload;
     },
   },

@@ -4,7 +4,7 @@ import settings from "../assets/settings.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { performAction } from "../reducers/userActionSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMessage } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 const SideBar = ({ profile }) => {
   const dispatch = useDispatch();
@@ -12,14 +12,22 @@ const SideBar = ({ profile }) => {
 
   return (
     <div className="flex flex-col justify-between p-4 bg-gray-100">
-      <button
-        className={`h-10 w-10 ${
-          userAction === "DEFAULT" ? "bg-gray-300 rounded-full" : ""
-        }`}
-        onClick={() => dispatch(performAction("DEFAULT"))}
-      >
-        <FontAwesomeIcon icon={faMessage} />
-      </button>
+      <div className="flex flex-col">
+        <button
+          className={`h-10 w-10 ${
+            userAction === "DEFAULT" ? "bg-gray-300 rounded-full" : ""
+          }`}
+          onClick={() => dispatch(performAction("DEFAULT"))}
+        >
+          <FontAwesomeIcon icon={faMessage} />
+        </button>
+        <button
+          className={`h-10 w-10`}
+          onClick={() => dispatch(performAction("GROUPS"))}
+        >
+          <FontAwesomeIcon icon={faUsers} />
+        </button>
+      </div>
       <div className="flex items-center flex-col">
         <button
           className={`mb-4 flex justify-center h-10 w-10 ${
