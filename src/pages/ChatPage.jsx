@@ -9,6 +9,7 @@ import UserList from "../components/UserList";
 import { useDispatch, useSelector } from "react-redux";
 import Profile from "../components/Profile";
 import { performAction } from "../reducers/userActionSlice";
+import Settings from "../components/Settings";
 
 const socket = io("http://localhost:5000");
 
@@ -108,7 +109,7 @@ const ChatPage = () => {
 
   const ChatList = () => {
     return (
-      <div>
+      <div className="p-4">
         <div className="flex justify-between">
           <h2 className="text-lg font-mono font-semibold mb-4">Chats</h2>
           <button onClick={() => dispatch(performAction("USERS_LIST"))}>
@@ -153,10 +154,11 @@ const ChatPage = () => {
   const renderLeftPanel = () => {
     switch (userAction) {
       case "PROFILE":
-        return <Profile />;
+        return <Profile profile={userProfile} />;
       case "USERS_LIST":
         return <UserList handleNewChat={handleNewChat} />;
-
+      case "SETTINGS":
+        return <Settings profile={userProfile} />;
       default:
         return <ChatList />;
     }
@@ -166,7 +168,7 @@ const ChatPage = () => {
       {userProfile && <SideBar profile={userProfile} />}
       <div className="flex h-screen font-sans w-full">
         {/* Left Panel - Chat List */}
-        <div className="w-1/3  p-4 overflow-auto border-x">
+        <div className="w-1/3   overflow-auto border-x">
           {renderLeftPanel()}
         </div>
 

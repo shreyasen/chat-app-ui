@@ -26,7 +26,7 @@ const UserList = ({ handleNewChat }) => {
   );
 
   return (
-    <div>
+    <div className="p-4">
       <div className="flex items-center mb-4">
         <button onClick={() => dispatch(performAction("DEFAULT"))}>
           <img src={back} alt="back Icon" width="20" height="20" />

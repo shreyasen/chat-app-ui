@@ -23,7 +23,7 @@ const SideBar = ({ profile }) => {
             : avatar
         }
         alt={profile?.name}
-        className="w-10 h-10 rounded-full mr-2"
+        className="w-10 h-10 rounded-full mr-2 cursor-pointer"
         onClick={() => {
           dispatch(performAction("PROFILE"));
         }}
