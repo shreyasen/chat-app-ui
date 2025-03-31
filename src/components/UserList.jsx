@@ -46,14 +46,17 @@ const UserList = ({ handleNewChat }) => {
         <button
           key={u._id}
           onClick={() => handleNewChat(u._id)}
-          className="flex w-full p-2 bg-white mb-2 rounded"
+          className="flex w-full p-2 border-b bg-white rounded hover:bg-gray-100"
         >
           <img
             src={u.profilePic ? `http://localhost:5000${u.profilePic}` : avatar}
             alt={u.name}
             className="w-10 h-10 rounded-full mr-2"
           />
-          <span>{u.name}</span>
+          <div className="flex flex-col items-start">
+            <div>{u.name}</div>
+            <div className="text-xs text-gray-500">{u.status}</div>
+          </div>
         </button>
       ))}
     </div>

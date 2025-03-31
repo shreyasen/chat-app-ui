@@ -129,7 +129,7 @@ const ChatPage = () => {
             return (
               <div
                 key={chat._id}
-                className="p-2 border-b-2 cursor-pointer flex items-center rounded-lg hover:bg-gray-300 transition duration-300"
+                className="p-2 border-b cursor-pointer flex items-center rounded-sm hover:bg-gray-100 transition duration-300"
                 onClick={() => setSelectedChat(chat)}
               >
                 <img
