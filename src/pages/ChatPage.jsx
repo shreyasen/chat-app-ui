@@ -24,30 +24,6 @@ const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    fetchLoggedInUser();
-    fetchChats();
-    socket.on("message", (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
-  }, []);
-  const fetchMessages = async () => {
-    try {
-      const response = await API.get(`/messages/${selectedChat._id}`);
-      setMessages(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedChat) {
-      dispatch(performAction("CHAT_SELECTED"));
-      socket.emit("joinChat", selectedChat._id);
-      fetchMessages();
-    }
-  }, [selectedChat]);
-
   const fetchLoggedInUser = async () => {
     try {
       const { data } = await API.get("/users/profile");
@@ -65,6 +41,38 @@ const ChatPage = () => {
       console.error("Error fetching chats:", error);
     }
   };
+
+  const fetchMessages = async () => {
+    try {
+      const response = await API.get(`/messages/${selectedChat._id}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLoggedInUser();
+    fetchChats();
+    socket.on("message", (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (userProfile) {
+      chats.forEach((chat) => {
+        socket.emit("joinChat", chat._id);
+      });
+    }
+  }, [userProfile, chats]);
+
+  useEffect(() => {
+    if (selectedChat) {
+      dispatch(performAction("CHAT_SELECTED"));
+      fetchMessages();
+    }
+  }, [selectedChat]);
 
   const handleNewChat = async (userId) => {
     try {
@@ -93,7 +101,31 @@ const ChatPage = () => {
 
   useEffect(() => {
     const handleMessage = (newMessage) => {
-      if (newMessage.chat?._id === selectedChat?._id) {
+      console.log("New message received:", newMessage);
+
+      setChats((prevChats) => {
+        const chatIndex = prevChats.findIndex(
+          (chat) => chat._id === newMessage.chat?._id
+        );
+
+        if (chatIndex !== -1) {
+          const updatedChats = [...prevChats];
+          const [movedChat] = updatedChats.splice(chatIndex, 1);
+          movedChat.latestMessage = newMessage;
+
+          // Mark unread if chat is not open
+          if (selectedChat?._id !== newMessage.chat?._id) {
+            movedChat.unreadCount = (movedChat.unreadCount || 0) + 1;
+          }
+
+          return [movedChat, ...updatedChats];
+        }
+
+        return prevChats;
+      });
+
+      // If the chat is open, update messages in the chat
+      if (selectedChat?._id === newMessage.chat?._id) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     };
@@ -145,6 +177,9 @@ const ChatPage = () => {
                 />
                 <div>
                   <span>{chat.isGroupChat ? chat.chatName : uu?.name}</span>
+                  <p className="text-sm text-gray-500">
+                    {chat.latestMessage?.content}
+                  </p>
                 </div>
               </div>
             );
