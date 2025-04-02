@@ -13,7 +13,21 @@ const Chat = ({
   handleSendMessage,
 }) => {
   const dispatch = useDispatch();
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState("");
+
+  // Group messages by date
+  const groupMessagesByDate = (messages) => {
+    return messages.reduce((acc, msg) => {
+      const date = new Date(msg.createdAt).toLocaleDateString("en-GB"); // DD/MM/YYYY format
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(msg);
+      return acc;
+    }, {});
+  };
+
+  const groupedMessages = groupMessagesByDate(messages);
 
   return (
     <div className="h-full flex flex-col justify-between">
@@ -57,24 +71,39 @@ const Chat = ({
               </div>
 
               <div className="flex-1 overflow-auto border p-4 mb-4">
-                {messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={
-                      msg.sender._id === userProfile._id
-                        ? "text-right mb-2"
-                        : "text-left mb-2"
-                    }
-                  >
-                    <p
-                      className={`p-2 inline-block rounded-lg ${
-                        msg.sender._id === userProfile._id
-                          ? "bg-green-200"
-                          : "bg-white"
-                      }`}
-                    >
-                      {msg.content}
-                    </p>
+                {Object.keys(groupedMessages).map((date) => (
+                  <div key={date}>
+                    <div className="flex justify-center">
+                      <span className="text-center text-gray-500 text-sm my-2 bg-white p-1 rounded-md shadow-md">
+                        {date}
+                      </span>
+                    </div>
+                    {groupedMessages[date].map((msg, index) => (
+                      <div
+                        key={index}
+                        className={
+                          msg.sender._id === userProfile._id
+                            ? "text-right mb-2"
+                            : "text-left mb-2"
+                        }
+                      >
+                        <p
+                          className={`p-2 inline-block rounded-lg ${
+                            msg.sender._id === userProfile._id
+                              ? "bg-green-200"
+                              : "bg-white"
+                          }`}
+                        >
+                          <span>{msg.content}</span>
+                          <sub className="text-[10px] text-gray-500 ml-2">
+                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </sub>
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>

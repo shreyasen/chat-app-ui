@@ -13,6 +13,7 @@ import Settings from "../components/Settings";
 import CreateGroupModal from "../components/CreateGroupModal";
 import GroupChat from "../components/GroupChat";
 import Chat from "../components/Chat";
+import background from "../assets/background.png";
 
 const socket = io("http://localhost:5000");
 
@@ -175,11 +176,36 @@ const ChatPage = () => {
                   alt={uu?.name}
                   className="w-10 h-10 rounded-full mr-2"
                 />
-                <div>
-                  <span>{chat.isGroupChat ? chat.chatName : uu?.name}</span>
-                  <p className="text-sm text-gray-500">
-                    {chat.latestMessage?.content}
-                  </p>
+                <div className="flex justify-between w-full">
+                  <div>
+                    <span>{chat.isGroupChat ? chat.chatName : uu?.name}</span>
+                    <p className="text-sm text-gray-500">
+                      {chat.latestMessage?.content}
+                    </p>
+                  </div>
+                  <div>
+                    {chat.unreadCount > 0 && (
+                      <span className="bg-teal-500 text-white rounded-full px-2 py-1 text-xs ml-2">
+                        {chat.unreadCount}
+                      </span>
+                    )}
+                    <p className="text-xs text-gray-400">
+                      {(() => {
+                        const messageDate = new Date(
+                          chat.latestMessage?.createdAt
+                        );
+                        const today = new Date();
+                        const isToday =
+                          messageDate.toDateString() === today.toDateString();
+                        return isToday
+                          ? messageDate.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : messageDate.toLocaleDateString("en-GB");
+                      })()}
+                    </p>
+                  </div>
                 </div>
               </div>
             );
@@ -243,12 +269,15 @@ const ChatPage = () => {
       {userProfile && <SideBar profile={userProfile} />}
       <div className="flex h-screen font-sans w-full">
         {/* Left Panel - Chat List */}
-        <div className="w-1/3   overflow-auto border-x">
-          {renderLeftPanel()}
-        </div>
+        <div className="w-1/3 overflow-auto border-x">{renderLeftPanel()}</div>
 
         {/* Right Panel - Chat or New Chat */}
-        <div className="w-2/3 bg-gray-200">{renderRightPanel()}</div>
+        <div
+          className="w-2/3 bg-cover bg-gray-200 bg-no-repeat"
+          style={{ backgroundImage: `url(${background})` }}
+        >
+          {renderRightPanel()}
+        </div>
       </div>
     </div>
   );
