@@ -36,7 +36,6 @@ const SignupPage = () => {
     }
 
     try {
-      console.log(formData);
       const response = await API.post("/users/register", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",

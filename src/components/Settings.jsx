@@ -36,7 +36,7 @@ const Settings = ({ profile }) => {
           alt={profile?.name}
           className="w-20 h-20 rounded-[50%]"
         />
-        <div className="px-6">{profile.name}</div>
+        <div className="px-6">{profile?.name}</div>
       </div>
       <div className="flex flex-col">
         <button className="flex items-center px-6 py-4 border-b border-gray-100 hover:bg-gray-100">
