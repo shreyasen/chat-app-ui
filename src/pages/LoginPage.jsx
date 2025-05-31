@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api/api";
+import API from "../api";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -49,12 +49,12 @@ const LoginPage = () => {
           required
         />
 
-        <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+        <button className="w-full bg-teal-500 text-white py-2 rounded hover:bg-teal-600">
           Login
         </button>
         <p className="mt-4">
           Don't have an account?{" "}
-          <a href="/signup" className="text-blue-500">
+          <a href="/signup" className="text-teal-500">
             Sign Up
           </a>
         </p>

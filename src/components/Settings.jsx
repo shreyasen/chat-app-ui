@@ -1,4 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { performAction } from "../reducers/userActionSlice";
+import { APP_URL } from "../constants";
 import avatar from "../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,11 +14,16 @@ import {
   faCircleQuestion,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { performAction } from "../reducers/userActionSlice";
 
 const Settings = ({ profile }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Logic for logging out the user
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   return (
     <div>
       <h1 className="font-bold text-lg p-4">Settings</h1>
@@ -23,11 +32,7 @@ const Settings = ({ profile }) => {
         onClick={() => dispatch(performAction("PROFILE"))}
       >
         <img
-          src={
-            profile?.profilePic
-              ? `http://localhost:5000${profile.profilePic}`
-              : avatar
-          }
+          src={profile?.profilePic ? `${APP_URL}${profile.profilePic}` : avatar}
           alt={profile?.name}
           className="w-20 h-20 rounded-[50%]"
         />
@@ -58,7 +63,10 @@ const Settings = ({ profile }) => {
           <FontAwesomeIcon icon={faCircleQuestion} />
           <span className="px-4">Help</span>
         </button>
-        <button className="flex items-center px-6 py-4 border-b border-gray-100 hover:bg-gray-100">
+        <button
+          className="flex items-center px-6 py-4 border-b border-gray-100 hover:bg-gray-100"
+          onClick={handleLogout}
+        >
           <FontAwesomeIcon icon={faRightFromBracket} color="red" />
           <span className="px-4 text-red-600">Logout</span>
         </button>

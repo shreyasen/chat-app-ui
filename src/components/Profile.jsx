@@ -1,4 +1,5 @@
 import React from "react";
+import { APP_URL } from "../constants";
 import avatar from "../assets/avatar.png";
 
 const Profile = ({ profile }) => {
@@ -7,11 +8,7 @@ const Profile = ({ profile }) => {
       <h1 className="font-bold text-lg p-4">Profile</h1>
       <div className="bg-slate-100 flex justify-center p-6">
         <img
-          src={
-            profile?.profilePic
-              ? `http://localhost:5000${profile.profilePic}`
-              : avatar
-          }
+          src={profile?.profilePic ? `${APP_URL}${profile.profilePic}` : avatar}
           alt={profile?.name}
           className="w-64 h-64 rounded-[50%]"
         />

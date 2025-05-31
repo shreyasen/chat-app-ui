@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api/api";
+import API from "../api";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -98,12 +98,12 @@ const SignupPage = () => {
           onChange={handleChange}
         />
 
-        <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+        <button className="w-full bg-teal-500 text-white py-2 rounded hover:bg-teal-600">
           Sign Up
         </button>
         <p className="mt-4">
           Already have an account?{" "}
-          <a href="/" className="text-blue-500">
+          <a href="/" className="text-teal-500">
             Login
           </a>
         </p>

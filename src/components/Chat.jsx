@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { performAction } from "../reducers/userActionSlice";
+import { groupMessagesByDate } from "../utils";
+import { APP_URL } from "../constants";
+import GroupChat from "./GroupChat";
 import back from "../assets/back-arrow.svg";
 import avatar from "../assets/avatar.png";
-import { performAction } from "../reducers/userActionSlice";
-import { useDispatch } from "react-redux";
-import GroupChat from "./GroupChat";
 
 const Chat = ({
   selectedChat,
@@ -14,18 +16,6 @@ const Chat = ({
 }) => {
   const dispatch = useDispatch();
   const [message, setMessage] = useState("");
-
-  // Group messages by date
-  const groupMessagesByDate = (messages) => {
-    return messages.reduce((acc, msg) => {
-      const date = new Date(msg.createdAt).toLocaleDateString("en-GB"); // DD/MM/YYYY format
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(msg);
-      return acc;
-    }, {});
-  };
 
   const groupedMessages = groupMessagesByDate(messages);
 
@@ -61,7 +51,7 @@ const Chat = ({
                 <img
                   src={
                     otherUser?.profilePic
-                      ? `http://localhost:5000${otherUser.profilePic}`
+                      ? `${APP_URL}${otherUser.profilePic}`
                       : avatar
                   }
                   alt={otherUser?.name}
@@ -124,7 +114,7 @@ const Chat = ({
                     handleSendMessage(message);
                     setMessage("");
                   }}
-                  className="ml-2 p-2 bg-blue-500 text-white"
+                  className="ml-2 p-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition duration-200"
                 >
                   Send
                 </button>

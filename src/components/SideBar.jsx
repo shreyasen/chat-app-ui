@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { performAction } from "../reducers/userActionSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { APP_URL } from "../constants";
 
 const SideBar = ({ profile }) => {
   const dispatch = useDispatch();
@@ -40,11 +41,7 @@ const SideBar = ({ profile }) => {
           <img src={settings} alt="Settings" width="20" height="20" />
         </button>
         <img
-          src={
-            profile?.profilePic
-              ? `http://localhost:5000${profile.profilePic}`
-              : avatar
-          }
+          src={profile?.profilePic ? `${APP_URL}${profile.profilePic}` : avatar}
           alt={profile?.name}
           className="w-10 h-10 rounded-full cursor-pointer"
           onClick={() => {

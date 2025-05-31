@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
-import API from "../api/api";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { performAction } from "../reducers/userActionSlice";
 import { io } from "socket.io-client";
-
-import avatar from "../assets/avatar.png";
-import newMessage from "../assets/new-message.svg";
+import API from "../api";
+import { APP_URL } from "../constants";
 import SideBar from "../components/SideBar";
 import UserList from "../components/UserList";
-import { useDispatch, useSelector } from "react-redux";
 import Profile from "../components/Profile";
-import { performAction } from "../reducers/userActionSlice";
 import Settings from "../components/Settings";
 import CreateGroupModal from "../components/CreateGroupModal";
-import GroupChat from "../components/GroupChat";
 import Chat from "../components/Chat";
 import background from "../assets/background.png";
+import avatar from "../assets/avatar.png";
+import group from "../assets/group.png";
+import newMessage from "../assets/new-message.svg";
 
-const socket = io("http://localhost:5000");
+const socket = io(APP_URL);
 
 const ChatPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userAction = useSelector((state) => state.userAction.leftPanel);
   const [userProfile, setUserProfile] = useState(null);
   const [chats, setChats] = useState([]);
@@ -30,6 +32,9 @@ const ChatPage = () => {
       const { data } = await API.get("/users/profile");
       setUserProfile(data);
     } catch (error) {
+      if (error.status === 401) {
+        navigate("/");
+      }
       console.error("Error fetching user:", error);
     }
   };
@@ -68,9 +73,25 @@ const ChatPage = () => {
     }
   }, [userProfile, chats]);
 
+  const handleChatSelection = async (chat) => {
+    setSelectedChat(chat);
+
+    // Mark chat as read on backend
+    try {
+      await API.put(`/chats/${chat._id}/read`, {});
+
+      // Remove unreadCount locally
+      setChats((prev) =>
+        prev.map((c) => (c._id === chat._id ? { ...c, unreadCount: 0 } : c))
+      );
+    } catch (err) {
+      console.error("Error marking chat as read:", err);
+    }
+  };
   useEffect(() => {
     if (selectedChat) {
       dispatch(performAction("CHAT_SELECTED"));
+      handleChatSelection(selectedChat);
       fetchMessages();
     }
   }, [selectedChat]);
@@ -78,7 +99,6 @@ const ChatPage = () => {
   const handleNewChat = async (userId) => {
     try {
       const { data } = await API.post("/chats", { userId });
-      //   setChats((prevChats) => [...prevChats, data]);
       fetchChats();
       setSelectedChat(data);
     } catch (error) {
@@ -102,8 +122,6 @@ const ChatPage = () => {
 
   useEffect(() => {
     const handleMessage = (newMessage) => {
-      console.log("New message received:", newMessage);
-
       setChats((prevChats) => {
         const chatIndex = prevChats.findIndex(
           (chat) => chat._id === newMessage.chat?._id
@@ -160,7 +178,7 @@ const ChatPage = () => {
           <p>No chats available. Start a new chat!</p>
         ) : (
           chats.map((chat) => {
-            const uu = chat.users.find((u) => u._id !== userProfile?._id);
+            const uu = chat.users?.find((u) => u._id !== userProfile?._id);
             return (
               <div
                 key={chat._id}
@@ -169,8 +187,10 @@ const ChatPage = () => {
               >
                 <img
                   src={
-                    uu?.profilePic
-                      ? `http://localhost:5000${uu.profilePic}`
+                    chat.isGroupChat
+                      ? chat.groupAvatar || group
+                      : uu?.profilePic
+                      ? `${APP_URL}${uu.profilePic}`
                       : avatar
                   }
                   alt={uu?.name}
@@ -191,9 +211,9 @@ const ChatPage = () => {
                     )}
                     <p className="text-xs text-gray-400">
                       {(() => {
-                        const messageDate = new Date(
-                          chat.latestMessage?.createdAt
-                        );
+                        const messageDate = chat.latestMessage
+                          ? new Date(chat.latestMessage?.createdAt)
+                          : new Date(chat.updatedAt);
                         const today = new Date();
                         const isToday =
                           messageDate.toDateString() === today.toDateString();
@@ -222,17 +242,11 @@ const ChatPage = () => {
         return <UserList handleNewChat={handleNewChat} />;
       case "SETTINGS":
         return <Settings profile={userProfile} />;
-      case "GROUPS":
-        return (
-          <CreateGroupModal
-            onClose={() => dispatch(performAction("DEFAULT"))}
-            onGroupCreated={handleGroupCreated}
-          />
-        );
       default:
         return <ChatList />;
     }
   };
+
   const DefaultRightPanel = () => {
     return (
       <div className="p-4 flex flex-col items-center justify-center h-full text-gray-500">
@@ -273,11 +287,17 @@ const ChatPage = () => {
 
         {/* Right Panel - Chat or New Chat */}
         <div
-          className="w-2/3 bg-cover bg-gray-200 bg-no-repeat"
+          className="w-2/3  bg-gray-200"
           style={{ backgroundImage: `url(${background})` }}
         >
           {renderRightPanel()}
         </div>
+        {userAction === "GROUPS" && (
+          <CreateGroupModal
+            onClose={() => dispatch(performAction("DEFAULT"))}
+            onGroupCreated={handleGroupCreated}
+          />
+        )}
       </div>
     </div>
   );
