@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { performAction } from "../reducers/userActionSlice";
-import { APP_URL } from "../constants";
 import avatar from "../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +31,7 @@ const Settings = ({ profile }) => {
         onClick={() => dispatch(performAction("PROFILE"))}
       >
         <img
-          src={profile?.profilePic ? `${APP_URL}${profile.profilePic}` : avatar}
+          src={profile?.profilePic ? profile.profilePic : avatar}
           alt={profile?.name}
           className="w-20 h-20 rounded-[50%]"
         />

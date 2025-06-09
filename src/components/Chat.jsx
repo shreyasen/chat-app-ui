@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { performAction } from "../reducers/userActionSlice";
 import { groupMessagesByDate } from "../utils";
-import { APP_URL } from "../constants";
 import GroupChat from "./GroupChat";
 import back from "../assets/back-arrow.svg";
 import avatar from "../assets/avatar.png";
@@ -49,11 +48,7 @@ const Chat = ({
                   <img src={back} alt="Back Icon" width="20" height="20" />
                 </button>
                 <img
-                  src={
-                    otherUser?.profilePic
-                      ? `${APP_URL}${otherUser.profilePic}`
-                      : avatar
-                  }
+                  src={otherUser?.profilePic ? otherUser.profilePic : avatar}
                   alt={otherUser?.name}
                   className="w-10 h-10 rounded-full mr-2"
                 />

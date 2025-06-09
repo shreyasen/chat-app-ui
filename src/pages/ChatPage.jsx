@@ -190,7 +190,7 @@ const ChatPage = () => {
                     chat.isGroupChat
                       ? chat.groupAvatar || group
                       : uu?.profilePic
-                      ? `${APP_URL}${uu.profilePic}`
+                      ? uu.profilePic
                       : avatar
                   }
                   alt={uu?.name}

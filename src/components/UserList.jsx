@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { APP_URL } from "../constants";
 import API from "../api";
 import { performAction } from "../reducers/userActionSlice";
 import back from "../assets/back-arrow.svg";
@@ -50,7 +49,7 @@ const UserList = ({ handleNewChat }) => {
           className="flex w-full p-2 border-b bg-white rounded hover:bg-gray-100"
         >
           <img
-            src={u.profilePic ? `${APP_URL}${u.profilePic}` : avatar}
+            src={u.profilePic ? u.profilePic : avatar}
             alt={u.name}
             className="w-10 h-10 rounded-full mr-2"
           />

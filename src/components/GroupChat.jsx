@@ -2,7 +2,6 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { performAction } from "../reducers/userActionSlice";
 import { groupMessagesByDate } from "../utils";
-import { APP_URL } from "../constants";
 import back from "../assets/back-arrow.svg";
 import group from "../assets/group.png";
 import avatar from "../assets/avatar.png";
@@ -69,9 +68,7 @@ const GroupChat = ({
                   {msg.sender._id !== userProfile._id && (
                     <img
                       src={
-                        msg.sender.profilePic
-                          ? `${APP_URL}${msg.sender.profilePic}`
-                          : avatar
+                        msg.sender.profilePic ? msg.sender.profilePic : avatar
                       }
                       alt={msg.sender.name}
                       className="w-10 h-10 rounded-full inline-block mr-2"
