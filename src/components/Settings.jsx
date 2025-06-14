@@ -22,6 +22,7 @@ const Settings = ({ profile }) => {
     // Logic for logging out the user
     localStorage.removeItem("token");
     navigate("/");
+    dispatch(performAction("DEFAULT"));
   };
   return (
     <div>
