@@ -1,12 +1,37 @@
-# React + Vite
+# WhatsUp - Real Time Chat Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## SignUp
 
-Currently, two official plugins are available:
+![Screenshot](<./src/assets/screenshots/Screenshot%20(167).png>)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Signin
 
-## Expanding the ESLint configuration
+![Screenshot](<./src/assets/screenshots/Screenshot%20(168).png>)
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Start New Chat
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(169).png>)
+
+## Profile
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(170).png>)
+
+## Settings
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(172).png>)
+
+## One-to-One Chat
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(173).png>)
+
+## Unread Message Count
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(174).png>)
+
+## Create Group Chat
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(176).png>)
+
+## Group Chat
+
+![Screenshot](<./src/assets/screenshots/Screenshot%20(175).png>)
